@@ -43,9 +43,17 @@ El núcleo del proyecto fue la creación de una fuente de datos robusta a partir
 *   **Normalización de Entidades:** Se detectó y corrigió la inconsistencia histórica de **"Unión Temuco"**, unificando sus registros bajo **"Deportes Temuco"** tras su fusión en 2013, mediante sentencias `UPDATE` en SQL.
 
 ### 2. Transformación Avanzada en SQL (BigQuery)
-Se crearon Vistas Materializadas para alimentar el dashboard:
-*   **Ajuste por Inflación (IPC):** Se integró una tabla de índices económicos del Banco Central. Mediante SQL, se calculó el valor real de cada monto histórico traído a **Pesos de 2024**, permitiendo una comparación justa a lo largo de la década.
-*   **Anualización de Datos:** Se desarrolló una lógica para consolidar los "Torneos Cortos" (Apertura/Clausura 2015-2017) en registros anuales únicos, sumando puntos y promediando posiciones para correlacionarlos con los ejercicios financieros anuales.
+Se diseñó una arquitectura modular de vistas SQL (disponibles en la carpeta [`/sql_queries`](sql_queries/)) para normalizar y alimentar el dashboard:
+
+*   **Ajuste por Inflación (IPC) - [`vw_ipc_indice.sql`](sql_queries/vw_ipc_indice.sql):** 
+    Se integró una tabla de índices económicos del Banco Central. Mediante **Window Functions** en SQL, se calculó el valor real de cada monto histórico traído a **Pesos de 2024**, permitiendo una comparación justa a lo largo de la década.
+
+*   **Anualización y Limpieza - [`vw_consolidada_primera.sql`](sql_queries/vw_consolidada_primera.sql) y [`vw_clubes_segunda_division.sql`](sql_queries/vw_clubes_segunda_division.sql):** 
+    Se desarrolló una lógica para consolidar los "Torneos Cortos" (Apertura/Clausura 2015-2017) en registros anuales únicos, sumando puntos y promediando posiciones. Además, estas vistas aplican los filtros de exclusión para outliers estructurales (ej. Wanderers 2020).
+
+*   **Modelado para Visualización - [`vw_historial_completo.sql`](sql_queries/vw_historial_completo.sql) y [`vw_posiciones_torneo.sql`](sql_queries/vw_posiciones_torneo.sql):**
+    *   La vista histórica completa actúa como una "tabla maestra" sin filtros para alimentar los KPIs y rankings globales.
+    *   La vista de posiciones mantiene la granularidad semestral para alimentar el Mapa de Calor, permitiendo visualizar campeones de torneos cortos por separado.
 
 ### 3. Manejo de Outliers y Casos Especiales
 El análisis requirió decisiones críticas de negocio para mantener la integridad estadística:
