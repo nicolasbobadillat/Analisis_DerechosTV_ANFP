@@ -21,7 +21,7 @@ Para ello, se contrastó la **Primera División** (reparto desigual) con la **Pr
 
 1.  **El Modelo de Reparto Crea una Ventaja, No una Garantía:** En Primera División, existe una correlación positiva y estadísticamente significativa (**R²=7.2%, p<0.001**). Los clubes con más dinero tienen una ventaja medible, pero el 93% del éxito depende de otros factores.
 2.  **La Equidad Anula el Efecto del Dinero:** En la Primera B, donde el reparto es igualitario, la correlación desaparece por completo (**p=0.84**). Esto demuestra que la influencia del dinero es una consecuencia directa del modelo de distribución desigual.
-3.  **Brecha Estructural:** Los "Tres Grandes" (Colo-Colo, U. de Chile, UC) capturan el **18.1%** de los ingresos totales, mientras que un equipo promedio de la B recibe **4 veces menos** recursos que uno de la élite.
+3.  **Brecha Estructural:** Los "Tres Grandes" (Colo-Colo, U. de Chile, UC) capturan el **18.1% (2024)** de los ingresos totales, mientras que un equipo promedio de la B recibe **4 veces menos** recursos que uno de la élite.
 4.  **Eficiencia de Gestión:** Clubes como **Huachipato (Campeón 2023)** y **Cobresal (Campeón 2015)** demostraron ser "Outliers de Eficiencia", logrando títulos con presupuestos significativamente menores a los grandes.
 
 ---
