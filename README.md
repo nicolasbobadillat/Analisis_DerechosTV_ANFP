@@ -7,73 +7,45 @@
 
 ---
 
-## 📝 Resumen Ejecutivo
+## Descripción del Proyecto
+Análisis cuantitativo sobre la relación entre la distribución de ingresos por derechos de televisión (ANFP) y el rendimiento deportivo en el fútbol chileno. El estudio utiliza datos financieros y deportivos de la última década para determinar si existe una correlación estadística entre presupuesto y éxito, contrastando la Primera División con la Primera B.
 
-El fútbol chileno mueve miles de millones de pesos anuales, principalmente a través de los derechos de televisión (TNT Sports). Sin embargo, la distribución de esta riqueza no es equitativa.
+## Stack Tecnológico
+*   **Google BigQuery:** Procesamiento de datos, limpieza y lógica de negocio (SQL).
+*   **Tableau:** Visualización de datos, parámetros y diseño de dashboard.
+*   **GitHub:** Control de versiones y documentación.
 
-Este proyecto es un análisis de datos *end-to-end* que investiga la relación entre el presupuesto asignado por la ANFP y el éxito deportivo durante la última década. El objetivo principal fue responder: **¿El dinero garantiza campeonatos en Chile?**
+## Metodología y Procesamiento de Datos
+El flujo de trabajo se dividió en tres etapas principales:
 
-Para ello, se contrastó la **Primera División** (reparto desigual) con la **Primera B** (reparto equitativo), utilizándola como grupo de control estadístico.
+### 1. Extracción y Normalización
+Se consolidaron datos financieros de las Memorias Anuales de la ANFP y datos deportivos públicos. Se realizó un proceso de limpieza para estandarizar nombres de clubes (ej. fusión de registros históricos) y corregir inconsistencias en los reportes oficiales.
 
----
+### 2. Transformación en SQL
+Se implementó una arquitectura de vistas en BigQuery (disponibles en `/sql_queries`) para preparar los datos:
+*   **Ajuste por Inflación:** Implementación de cálculo de valor presente utilizando datos del IPC del Banco Central para comparar montos monetarios a lo largo de 10 años.
+*   **Estandarización Temporal:** Conversión de torneos cortos (Apertura/Clausura) a registros anuales para permitir la correlación con ejercicios financieros.
+*   **Filtros de Calidad:** Exclusión de registros atípicos por motivos administrativos (ej. Wanderers 2020) para evitar sesgos en el modelo estadístico.
 
-## 💡 Hallazgos Principales (Insights)
+### 3. Visualización y Análisis
+El dashboard en Tableau implementa:
+*   **Sheet Swapping:** Lógica para ocultar gráficos vacíos dinámicamente según la disponibilidad de datos.
+*   **Parámetros Globales:** Control unificado para filtrar múltiples fuentes de datos simultáneamente.
+*   **Cálculos LOD:** Expresiones de Nivel de Detalle para comparar métricas de clubes específicos contra promedios globales.
 
-1.  **El Modelo de Reparto Crea una Ventaja, No una Garantía:** En Primera División, existe una correlación positiva y estadísticamente significativa (**R²=7.2%, p<0.001**). Los clubes con más dinero tienen una ventaja medible, pero el 93% del éxito depende de otros factores.
-2.  **La Equidad Anula el Efecto del Dinero:** En la Primera B, donde el reparto es igualitario, la correlación desaparece por completo (**p=0.84**). Esto demuestra que la influencia del dinero es una consecuencia directa del modelo de distribución desigual.
-3.  **Brecha Estructural:** Los "Tres Grandes" (Colo-Colo, U. de Chile, UC) capturan el **18.1% (2024)** de los ingresos totales, mientras que un equipo promedio de la B recibe **4 veces menos** recursos que uno de la élite.
-4.  **Eficiencia de Gestión:** Clubes como **Huachipato (Campeón 2023)** y **Cobresal (Campeón 2015)** demostraron ser "Outliers de Eficiencia", logrando títulos con presupuestos significativamente menores a los grandes.
+## Conclusiones
+El análisis arroja tres resultados principales:
 
----
+1.  **Primera División:** Existe una correlación positiva estadísticamente significativa (R²=7.2%, p<0.001) entre ingresos y puntos.
+2.  **Segunda División:** En un escenario de reparto equitativo, la correlación desaparece (p=0.17), indicando que la ventaja competitiva es producto del modelo de distribución.
+3.  **Eficiencia:** Se identificaron clubes que logran alto rendimiento con bajo presupuesto (Outliers de eficiencia), desafiando la tendencia general.
 
-## 🛠️ Stack Tecnológico
+## Estructura del Repositorio
+*   `/sql_queries`: Scripts SQL utilizados en BigQuery.
+*   `/images`: Recursos gráficos del proyecto.
 
-*   **Google BigQuery (SQL):** Almacenamiento, limpieza, transformación y cálculos complejos (Window Functions, CTEs).
-*   **Tableau Desktop/Public:** Visualización avanzada, parámetros globales, cálculos LOD (Level of Detail) y diseño de interfaz (UI/UX).
-*   **Excel/Google Sheets:** Recolección inicial de datos manual desde fuentes no estructuradas (PDFs de Estados Financieros).
 
----
-
-## ⚙️ Ingeniería de Datos y Metodología (ETL)
-
-El núcleo del proyecto fue la creación de una fuente de datos robusta a partir de información dispersa.
-
-### 1. Recolección y Limpieza
-*   Se extrajeron datos financieros de las **Memorias Anuales de la ANFP** y datos deportivos de fuentes públicas.
-*   **Normalización de Entidades:** Se detectó y corrigió la inconsistencia histórica de **"Unión Temuco"**, unificando sus registros bajo **"Deportes Temuco"** tras su fusión en 2013, mediante sentencias `UPDATE` en SQL.
-
-### 2. Transformación Avanzada en SQL (BigQuery)
-Se diseñó una arquitectura modular de vistas SQL (disponibles en la carpeta [`/sql-queries`](sql-queries/)) para normalizar y alimentar el dashboard:
-
-*   **Ajuste por Inflación (IPC) - [`vw_ipc_indice.sql`](sql-queries/vw_ipc_indice.sql):** 
-    Se integró una tabla de índices económicos del Banco Central. Mediante **Window Functions** en SQL, se calculó el valor real de cada monto histórico traído a **Pesos de 2024**, permitiendo una comparación justa a lo largo de la década.
-
-*   **Anualización y Limpieza - [`vw_consolidada_primera.sql`](sql-queries/vw_consolidada_primera.sql) y [`vw_clubes_segunda_division.sql`](sql-queries/vw_clubes_segunda_division.sql):** 
-    Se desarrolló una lógica para consolidar los "Torneos Cortos" (Apertura/Clausura 2015-2017) en registros anuales únicos, sumando puntos y promediando posiciones. Además, estas vistas aplican los filtros de exclusión para outliers estructurales (ej. Wanderers 2020).
-
-*   **Modelado para Visualización - [`vw_historial_completo.sql`](sql-queries/vw_historial_completo.sql) y [`vw_posiciones_torneo.sql`](sql-queries/vw_posiciones_torneo.sql):**
-    *   La vista histórica completa actúa como una "tabla maestra" sin filtros para alimentar los KPIs y rankings globales.
-    *   La vista de posiciones mantiene la granularidad semestral para alimentar el Mapa de Calor, permitiendo visualizar campeones de torneos cortos por separado.
-
-### 3. Manejo de Outliers y Casos Especiales
-El análisis requirió decisiones críticas de negocio para mantener la integridad estadística:
-
-*   **⛔ Exclusión Estructural (Wanderers y La Serena, 2020):** Se excluyeron estos registros del modelo de correlación. *Razón:* Debido a la cancelación de descensos en 2019, la liga tuvo más equipos en 2020, y estos clubes recibieron un monto de TV artificialmente reducido por decisión administrativa, lo que los convertía en outliers no representativos.
-*   **✅ Inclusión Narrativa (Deportes Melipilla, 2021):** Se mantuvo en el dataset a pesar de ser un outlier extremo (bajo ingreso). *Razón:* El club completó la temporada deportivamente, pero sus ingresos fueron retenidos por sanciones administrativas (dobles contratos). Se utiliza en el dashboard como un caso de estudio sobre "Gestión vs. Sanción".
-*   **⚠️ Limitación de Datos (Primera B 2015-2017):** El análisis de control de la Segunda División se centra en el periodo 2018-2024 debido a inconsistencias en la disponibilidad de datos públicos fidedignos para los años anteriores en esta categoría.
-
----
-
-## 📊 Características del Dashboard
-
-El producto final en Tableau implementa técnicas avanzadas de visualización:
-
-1.  **Diseño "Landing Page":** Una portada de alto impacto visual con navegación oculta para mejorar la experiencia de usuario.
-2.  **Interactividad Global:** Un **Parámetro de Año** controla todas las hojas simultáneamente, recalculando rankings y distribuciones al vuelo.
-3.  **Sheet Swapping (Intercambio de Hojas):** Implementación de lógica condicional para mostrar mensajes de "Sin Datos Disponibles" o "Seleccione un Año" dinámicamente, ocultando los gráficos vacíos.
-4.  **Gráficos Avanzados:**
-    *   **Scatter Plots Comparativos:** Primera vs. Segunda División.
-    *   **Gráfico Tornado:** Comparación de Inversión vs. Eficiencia (Costo por Punto).
-
----
-*Proyecto desarrollado como parte de un portafolio de Data Analytics. Los datos son aproximaciones basadas en información pública y pueden tener márgenes de error respecto a la contabilidad interna de los clubes.*
+## Recursos
+*   **Datos:** Estados Financieros de la ANFP y Wikipedia.
+*   **Portada:** Imagen generada por IA (NanoBanana)
+*   **Iconos/Logos:** Logos oficiales de los clubes.
